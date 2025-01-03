@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package Container;
+option go_package="/proto";
+
+// Generated according to https://cloud.google.com/apis/design/standard_methods
+service Containers {
+  rpc ListContainers(ListContainersRequest) returns (ListContainersResponse);
+  rpc GetContainerInfo(GetContainerRequest) returns (GetContainerResponse);
+}
+
+message ContainerInfo {
+    string id = 1;
+    string name = 2;
+    string image = 3;
+    string status = 4;
+}
+
+message ListContainersRequest {
+  // 能被List出Container的数量
+  string container_count = 1;
+}
+
+message GetContainerRequest {
+    // 能被List出Container的数量
+    string container_id = 1;
+  }
+
+message ListContainersResponse {
+  // The field name should match the noun "Type" in the method name.
+  // There will be a maximum number of items returned based on the page_size field in the request.
+  repeated ContainerInfo ContainerList = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no more results in the list.
+  string next_page_token = 2;
+}
+
+message GetContainerResponse {
+    ContainerInfo ContainerList = 1;
+}
+
