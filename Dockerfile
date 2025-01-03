@@ -10,4 +10,4 @@ RUN go build -o demo .
 # APP 访问端口
 EXPOSE 7077
 # Xdemo Server启动执行的命令
-CMD ["/app/demo -tlscert=tls.crt -tlskey=tls.key -tlsport=17443"]
+CMD ["/app/demo", "-tlscert","tls.crt","-tlskey","tls.key","-tlsport","17443"]

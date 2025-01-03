@@ -72,32 +72,32 @@ pipeline {
                 sh "sudo docker push ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
             }
         }
-        stage('Deploy To Develop Env') {
-            when {
-                anyOf {
-                    expression { "${env.GIT_BRANCH}" =~ /(main)/ }
-                    expression { "${env.GIT_TAG}" =~ /(^v.*)/ }
-                }
-            }
-            steps {
-                script {
-                    def remote = [:]
-                    remote.name = 'develop-server-01'
-                    remote.host = "${DEVELOP_SERVER_IP}"
-                    remote.allowAnyHosts = true
-                    withCredentials([usernamePassword(credentialsId: 'harbor_robot_account', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account'), usernamePassword(credentialsId: 'ssh-for-password-10.0.20.5', passwordVariable: 'dev_server_pwd', usernameVariable: 'dev_server_user')]) {
-                        // 设置ssh server的login info
-                        remote.user = "${dev_server_user}"
-                        remote.password = "${dev_server_pwd}"
-                        // 登录Harbor
-                        sshCommand remote: remote, command: "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
-                        // 停止并删除之前的容器
-                        sshCommand remote: remote, command: "if [ -n \"\$(sudo docker ps -a -q --filter name=${CONTAINER_NAME})\" ];then sudo docker stop ${CONTAINER_NAME} && sudo docker rm ${CONTAINER_NAME};else echo 'Container is not exist';fi"
-                        sshCommand remote: remote, command: "sudo docker pull ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                        sshCommand remote: remote, command: "sudo docker run -itd -p 17443:17443 --name=${CONTAINER_NAME} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                    }
-                }
-            }
-        }
+        // stage('Deploy To Develop Env') {
+        //     when {
+        //         anyOf {
+        //             expression { "${env.GIT_BRANCH}" =~ /(main)/ }
+        //             expression { "${env.GIT_TAG}" =~ /(^v.*)/ }
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             def remote = [:]
+        //             remote.name = 'develop-server-01'
+        //             remote.host = "${DEVELOP_SERVER_IP}"
+        //             remote.allowAnyHosts = true
+        //             withCredentials([usernamePassword(credentialsId: 'harbor_robot_account', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account'), usernamePassword(credentialsId: 'ssh-for-password-10.0.20.5', passwordVariable: 'dev_server_pwd', usernameVariable: 'dev_server_user')]) {
+        //                 // 设置ssh server的login info
+        //                 remote.user = "${dev_server_user}"
+        //                 remote.password = "${dev_server_pwd}"
+        //                 // 登录Harbor
+        //                 sshCommand remote: remote, command: "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+        //                 // 停止并删除之前的容器
+        //                 sshCommand remote: remote, command: "if [ -n \"\$(sudo docker ps -a -q --filter name=${CONTAINER_NAME})\" ];then sudo docker stop ${CONTAINER_NAME} && sudo docker rm ${CONTAINER_NAME};else echo 'Container is not exist';fi"
+        //                 sshCommand remote: remote, command: "sudo docker pull ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        //                 sshCommand remote: remote, command: "sudo docker run -itd -p 17443:17443 --name=${CONTAINER_NAME} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        //             }
+        //         }
+        //     }
+        // }
     }
 }

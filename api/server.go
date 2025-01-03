@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 )
@@ -27,18 +28,21 @@ func StartServer() {
 	srv := &http.Server{Addr: "localhost:" + tlsPort}
 	go func() {
 		err := srv.ListenAndServeTLS(tlsCert, tlsKey)
+		log.Println("启动http服务器成功（TLS）")
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatalln("启动TLS HTTP服务器失败,", err)
 		}
 	}()
 
 	// 设置优雅退出服务器(使用context方式)
-	// signalChannel := make(chan os.Signal, 1)
-	// signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
-	ctx, cancel := signal.NotifyContext(context.TODO(), syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGINT)
+	ctx, cancel := signal.NotifyContext(context.TODO(), syscall.SIGTERM, syscall.SIGINT)
 	defer cancel()
 	// 由于ctx.Done()返回一个只读channel，从该通道读取消息（阻塞）即是等待信号量的出现。
 	<-ctx.Done()
+	// 获取导致退出的signal
+	log.Println("导致退出的信号量是：", <-signalChannel)
 	err := srv.Shutdown(ctx)
 	if err != nil {
 		log.Println("关闭Server出现错误,", err)
