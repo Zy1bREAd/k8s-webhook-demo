@@ -8,7 +8,8 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct && go mod download
 # 拷贝当前git目录所有内容到/app下
 COPY . .
 RUN go build -o demo .
+RUN ls -al & pwd
 # APP 访问端口
 EXPOSE 7077
 # Xdemo Server启动执行的命令
-CMD ["/app/demo -tlscert='ocean.crt' -tlskey='ocean.key' -tlsport=17443"]
+CMD ["/app/demo -tlscert=/ocean.crt -tlskey='ocean.key' -tlsport=17443"]
