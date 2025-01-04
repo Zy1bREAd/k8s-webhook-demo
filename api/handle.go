@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -36,4 +37,10 @@ func OceanHook(w http.ResponseWriter, r *http.Request) {
 	resp := admitPod(*ar.Request)
 	writeResponse(w, resp)
 
+}
+
+func OceanHealthCheck(w http.ResponseWriter, r *http.Request) {
+	// 健康检查
+	fmt.Println(r.Body)
+	w.Write([]byte("200 OK"))
 }
