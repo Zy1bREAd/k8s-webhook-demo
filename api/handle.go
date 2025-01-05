@@ -11,7 +11,13 @@ import (
 )
 
 func writeResponse(w http.ResponseWriter, resp *v1beta1.AdmissionResponse) {
-	responseBytes, err := json.Marshal(v1beta1.AdmissionReview{Response: resp})
+	responseBytes, err := json.Marshal(v1beta1.AdmissionReview{
+		Response: resp,
+		TypeMeta: v1.TypeMeta{
+			Kind:       "AdmissionReview",
+			APIVersion: "admission.k8s.io/v1",
+		},
+	})
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
