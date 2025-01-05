@@ -25,7 +25,7 @@ func StartServer() {
 	fmt.Println(tlsCert, tlsKey, tlsPort)
 
 	// goroutine 启动HTTP Server
-	srv := &http.Server{Addr: "localhost:" + tlsPort}
+	srv := &http.Server{Addr: "0.0.0.0:" + tlsPort}
 	go func() {
 		err := srv.ListenAndServeTLS(tlsCert, tlsKey)
 		if err != nil && err != http.ErrServerClosed {
