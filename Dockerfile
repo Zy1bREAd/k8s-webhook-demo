@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine
+FROM golang:1.23
 MAINTAINER OceanWang
 WORKDIR /app
 # 单独复制mod和sum文件，去下载依赖

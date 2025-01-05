@@ -28,12 +28,11 @@ func StartServer() {
 	srv := &http.Server{Addr: "localhost:" + tlsPort}
 	go func() {
 		err := srv.ListenAndServeTLS(tlsCert, tlsKey)
-		log.Println("启动http服务器成功（TLS）")
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatalln("启动TLS HTTP服务器失败,", err)
 		}
 	}()
-
+	log.Println("启动http服务器成功（TLS）")
 	// 设置优雅退出服务器(使用context方式)
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGINT)
