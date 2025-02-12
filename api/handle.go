@@ -79,9 +79,18 @@ func OceanHook(w http.ResponseWriter, r *http.Request) {
 
 // 健康检查
 func OceanHealthCheck(w http.ResponseWriter, r *http.Request) {
-	// 健康检查
-	fmt.Println(r.Body)
-	w.Write([]byte("200 OK"))
+	// 序列化数据
+	v := map[string]any{
+		"status": "Success",
+		"code":   0,
+		"msg":    "Green",
+	}
+	respData, err := json.Marshal(v)
+	if err != nil {
+		log.Println("序列化数据发生错误,", err)
+		return
+	}
+	w.Write([]byte(respData))
 }
 
 // Post请求根据id获取task（仅prometheus暴露指标使用）
@@ -147,4 +156,15 @@ func NewOceanMetrics() *OceanMetrics {
 func RegisterMetrics() {
 	myMetrics = NewOceanMetrics()
 	prometheus.MustRegister(myMetrics.QueryCounter)
+}
+
+// HandleFunc实现中间件
+func LoggerForTestAPI(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 这是经过中间件处理的逻辑
+		log.Println("Logger Start...")
+		next(w, r)
+		log.Println("Hello,World")
+		log.Println("Logger End####")
+	}
 }

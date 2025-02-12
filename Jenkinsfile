@@ -1,17 +1,18 @@
 pipeline {
-    agent any
+    agent { Kubernetes { label 'go' } }
 
     // 定义环境变量
     environment {
         // 例如设置项目相关的变量
         PROJECT_NAME = "OceanWang"
         CONTAINER_NAME = "webhook_demo"
-        HARBOR_URL = "oceanwang.hub"
+        HARBOR_URL = "oceanwang.harbor.domain"
         HARBOR_PROJECT = "library"
-        GITHUB_REPO_URL = "https://github.com/Zy1bREAd/Xdemo-backend.git"
-        DEVELOP_SERVER_IP = "10.0.20.5"
-        DEVELOP_SERVER_USER = "ubuntu"
-        DEVELOP_SERVER_CRED_ID = "ssh-for-password-10.0.20.5"
+        GITHUB_REPO_URL = "https://github.com/Zy1bREAd/k8s-webhook-demo.git"
+        // 采用argoCD
+        // DEVELOP_SERVER_IP = "10.0.20.5"
+        // DEVELOP_SERVER_USER = "ubuntu"
+        // DEVELOP_SERVER_CRED_ID = "ssh-for-password-10.0.20.5"
     }
 
     // 构建步骤
@@ -34,9 +35,12 @@ pipeline {
         // 登录Harbor镜像仓库
         stage('Login Image Registry') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'harbor_robot_account', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account')]) {
-                    sh "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+                container('dind') {
+                    withCredentials([usernamePassword(credentialsId: 'harbor_ci_robot', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account')]) {
+                        sh "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+                    }
                 }
+
             }
         }
         // 构建镜像在dev环境
@@ -48,8 +52,9 @@ pipeline {
                 }
             }
             steps {
-                
-                sh "sudo docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile --no-cache ."
+                container('dind') {
+                    sh "sudo docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile --no-cache ."
+                }
             }
         }
 
@@ -68,8 +73,10 @@ pipeline {
         stage('Push Image') {
             // 推送镜像到Harbor
             steps {
-                sh "sudo docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                sh "sudo docker push ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                container('dind') {
+                    sh "sudo docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "sudo docker push ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
             }
         }
         // stage('Deploy To Develop Env') {
