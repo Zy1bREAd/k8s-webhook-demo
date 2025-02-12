@@ -1,5 +1,5 @@
 pipeline {
-    agent { Kubernetes { label 'go' } }
+    agent { kubernetes { label 'go' } }
 
     // 定义环境变量
     environment {
