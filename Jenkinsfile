@@ -37,7 +37,9 @@ pipeline {
             steps {
                 container('dind') {
                     withCredentials([usernamePassword(credentialsId: 'harbor_ci_robot', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account')]) {
-                        sh "docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+                        sh "echo ${harbor_robot_token}"
+                        sh "echo ${harbor_robot_account}"
+                        sh "docker login -u ${harbor_robot_account} -p ${harbor_robot_token} ${HARBOR_URL}"
                     }
                 }
 
