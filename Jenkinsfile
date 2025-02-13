@@ -37,7 +37,7 @@ pipeline {
             steps {
                 container('dind') {
                     withCredentials([usernamePassword(credentialsId: 'harbor_ci_robot', passwordVariable: 'harbor_robot_token', usernameVariable: 'harbor_robot_account')]) {
-                        sh "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+                        sh "docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
                     }
                 }
 
@@ -53,7 +53,7 @@ pipeline {
             }
             steps {
                 container('dind') {
-                    sh "sudo docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile --no-cache ."
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile --no-cache ."
                 }
             }
         }
@@ -74,8 +74,8 @@ pipeline {
             // 推送镜像到Harbor
             steps {
                 container('dind') {
-                    sh "sudo docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                    sh "sudo docker push ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker push ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -97,11 +97,11 @@ pipeline {
         //                 remote.user = "${dev_server_user}"
         //                 remote.password = "${dev_server_pwd}"
         //                 // 登录Harbor
-        //                 sshCommand remote: remote, command: "sudo docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
+        //                 sshCommand remote: remote, command: "docker login ${HARBOR_URL} -u ${harbor_robot_account} -p ${harbor_robot_token}"
         //                 // 停止并删除之前的容器
-        //                 sshCommand remote: remote, command: "if [ -n \"\$(sudo docker ps -a -q --filter name=${CONTAINER_NAME})\" ];then sudo docker stop ${CONTAINER_NAME} && sudo docker rm ${CONTAINER_NAME};else echo 'Container is not exist';fi"
-        //                 sshCommand remote: remote, command: "sudo docker pull ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-        //                 sshCommand remote: remote, command: "sudo docker run -itd -p 17443:17443 --name=${CONTAINER_NAME} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        //                 sshCommand remote: remote, command: "if [ -n \"\$(docker ps -a -q --filter name=${CONTAINER_NAME})\" ];then docker stop ${CONTAINER_NAME} && docker rm ${CONTAINER_NAME};else echo 'Container is not exist';fi"
+        //                 sshCommand remote: remote, command: "docker pull ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        //                 sshCommand remote: remote, command: "docker run -itd -p 17443:17443 --name=${CONTAINER_NAME} ${HARBOR_URL}/${HARBOR_PROJECT}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
         //             }
         //         }
         //     }
