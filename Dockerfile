@@ -3,7 +3,7 @@ MAINTAINER OceanWang
 WORKDIR /app
 # 单独复制mod和sum文件，去下载依赖
 COPY go.mod go.sum ./
-RUN go env -w GOPROXY=https://goproxy.cn,direct && go mod download
+RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct && go mod download
 # 拷贝当前git目录所有内容到/app下
 COPY . .
 RUN go build -o demo .
