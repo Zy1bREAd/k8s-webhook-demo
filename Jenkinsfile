@@ -6,7 +6,7 @@ pipeline {
         // 例如设置项目相关的变量
         PROJECT_NAME = "OceanWang"
         CONTAINER_NAME = "webhook_demo"
-        HARBOR_URL = "oceanwang.harbor.domain"
+        HARBOR_URL = "harbor.harbor.svc.cluster.local"
         HARBOR_PROJECT = "library"
         GITHUB_REPO_URL = "https://github.com/Zy1bREAd/k8s-webhook-demo.git"
         // 采用argoCD
