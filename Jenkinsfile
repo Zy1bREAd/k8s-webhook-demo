@@ -47,9 +47,9 @@ spec:
       mountPath: /etc/docker/certs.d/${HARBOR_URL}
   volumes:
   - name: workspace
-      emptyDir: {}
+    emptyDir: {}
   - name: docker-certs
-      emptyDir: {}
+    emptyDir: {}
 '''
         }
     } 
