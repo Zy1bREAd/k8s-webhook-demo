@@ -43,12 +43,8 @@ spec:
     volumeMounts:
     - name: workspace
       mountPath: /home/jenkins/agent
-    - name: docker-certs
-      mountPath: /etc/docker/certs.d/${HARBOR_URL}
   volumes:
   - name: workspace
-    emptyDir: {}
-  - name: docker-certs
     emptyDir: {}
 '''
         }
