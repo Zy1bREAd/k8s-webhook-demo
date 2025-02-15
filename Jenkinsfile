@@ -8,6 +8,7 @@ metadata:
   labels:
   jenkins/label: agent-pod        # 定义Pod标签
 spec:
+  hostnetwork: true
   containers:       # 容器模板list
   - name: jnlp
     mage: jenkins/inbound-agent:alpine
