@@ -29,7 +29,7 @@ spec:
     - cat
     volumeMounts:
     - name: workspace
-    mountPath: /home/jenkins/agent
+      mountPath: /home/jenkins/agent
   - name: dind
     image: docker:dind
     args:
