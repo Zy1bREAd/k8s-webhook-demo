@@ -1,52 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yaml '''
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-  jenkins/label: agent-pod        # 定义Pod标签
-spec:
-  containers:       # 容器模板list
-  - name: jnlp
-    mage: jenkins/inbound-agent:alpine
-    tty: true       # 开启伪终端分配
-    resources:
-      limits:
-        cpu: 200m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-    volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
-  - name: golang
-    image: golang:1.21-alpine
-    tty: true
-    command:
-    - cat
-    volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
-  - name: dind
-    image: docker:dind
-    args:
-    - --registry-mirror=https://mirror.ccs.tencentyun.com
-    - --insecure-registry=https://oceanwang.harbor.domain
-    securityContext:
-      privileged: true      # 需要以root方式启动
-    env:
-    - name: DOCKER_HOST
-      value: tcp://localhost:2375
-    volumeMounts:
-    - name: workspace
-      mountPath: /home/jenkins/agent
-  volumes:
-  - name: workspace
-    emptyDir: {}
-'''
+            yamlFile 'podTemplate.yaml'
         }
     } 
     // 定义环境变量
