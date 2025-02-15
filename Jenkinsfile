@@ -93,7 +93,21 @@ spec:
                 }
             }
         }
-
+        stage('Debug Network') {
+            steps {
+                container('dind') {
+                    sh '''
+                        apk add --no-cache curl bind-tools
+                        # 测试 DNS 解析
+                        nslookup mirrors.aliyun.com
+                        # 测试 HTTPS 连通性
+                        curl -vI https://mirrors.aliyun.com
+                        # 测试 Go 模块代理访问
+                        curl -vI https://mirrors.aliyun.com/goproxy/github.com/beorn7/perks/@v/v1.0.1.mod
+                    '''
+                }
+            }
+        }
         stage('build-image') {
             when {
                 anyOf {
@@ -103,7 +117,7 @@ spec:
             }
             steps {
                 container('dind') {
-                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile --no-cache ."
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f Dockerfile ."
                 }
             }
         }
